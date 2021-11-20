@@ -1,0 +1,63 @@
+import React from 'react';
+import './Feed.css';
+import avata from './img/perfil.png';
+import axios from 'axios';
+
+import { useHistory } from 'react-router-dom';
+
+
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+
+const  schema = yup.object().shape({
+    content: yup.string().required('Opa! este campo está vazio.')
+})
+
+var data = new Date();
+
+var hora = data.getHours();
+var minutos = data.getMinutes();
+
+var horario = `${hora}:${minutos}`;
+
+
+function Coment() {
+
+    const { register, handleSubmit,formState: { errors } } = useForm({
+        resolver: yupResolver(schema)
+    })
+
+    let history = useHistory();
+
+
+    const addPost = data => axios.post("https://projeto-start.herokuapp.com/create_post", data)
+    .then(() => {
+        history.go(0)
+    }).catch(() => {
+        console.log('nao foi')
+    })
+
+  return (
+    <div className="post">
+        <div className="post-header">
+            <img className="avatar" src="https://images.pexels.com/photos/8980695/pexels-photo-8980695.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" />
+            <div className="details">
+                <span>João Lima</span>
+                <span>{horario}</span>
+            </div>
+        </div>
+        <form className="form" onSubmit={handleSubmit(addPost)}>
+            <div className="butoes">
+                <button type="submit" >Enviar</button>
+            </div>
+            
+            <textarea id="texto" type="text" placeholder="Escreva seu post aqui..." name="content" {...register('content') }></textarea>
+            <span className="err" >{errors.content?.message}</span>
+        </form>
+    </div>
+  );
+}
+
+export default Coment;

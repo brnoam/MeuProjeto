@@ -1,0 +1,54 @@
+import React, { useState, useEffect } from 'react';
+import './Feed.css';
+import avata from './img/perfil.png';
+import axios from 'axios';
+
+function EditPost() {
+
+    const [ posts, setPosts ] = useState([]);
+
+
+    useEffect(() => {
+        axios.get("https://projeto-start.herokuapp.com/list_posts")
+        .then((response) => {
+            setPosts(response.data.posts)
+            
+        }).catch(() => {
+            console.log('nao foi2')
+        })
+
+    }, [])
+
+    function deletePost(id){
+        axios.delete(`https://projeto-start.herokuapp.com/delete_post/${id}`)
+        setPosts(posts.filter(post => post._id !== id))
+    }
+
+  return (
+      <>
+      {posts.map((post, key) => {
+            return(
+                <div className="post" key={key}>
+        
+                    <div className="post-header">
+                        <img className="avatar" src="https://images.pexels.com/photos/2406949/pexels-photo-2406949.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" />
+                        <div className="details">
+                            <span>João Lima</span>
+                            <span>--:--</span>
+                        </div>
+                    </div>
+                    <form className="form">
+                        <div className="butoes">
+                            <button onClick={() => deletePost(post._id)} id="butt-delet">Apagar</button>
+                        </div>
+                        <p className="post-content">{post.content}</p>
+                    </form>
+                </div>
+            );
+        })}
+      </>
+    
+  );
+}
+
+export default EditPost;
